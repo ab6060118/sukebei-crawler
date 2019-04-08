@@ -61,7 +61,12 @@ function queryFc2(no) {
               sukebeiBucket.upload(filepath, {
                 destination: no + '/' + filename,
               }).then(function() {
-                fs.unlinkSync(filepath)
+                fs.unlink(filepath, function(err) {
+                  if (err) {
+                    console.error(err)
+                    return
+                  }
+                })
               })
             })
           });
