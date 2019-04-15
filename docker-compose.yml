@@ -1,0 +1,9 @@
+version: "3"
+services:
+    sukebei-crawler:
+        image: sukebei-crawler
+        container_name: sukebei-crawler
+        volumes:
+            - ./temp:/usr/src/app/temp
+            - ./config:/usr/src/app/config
+        restart: unless-stopped
