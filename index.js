@@ -112,9 +112,17 @@ function queryFc2(hashName, post) {
 
 function write_data(name, data) {
   var doc = sukebeiCollection.doc(name)
+  var m = new Date();
+  var dateString =
+    m.getUTCFullYear() + "/" +
+    ("0" + (m.getUTCMonth()+1)).slice(-2) + "/" +
+    ("0" + m.getUTCDate()).slice(-2) + " " +
+    ("0" + m.getUTCHours()).slice(-2) + ":" +
+    ("0" + m.getUTCMinutes()).slice(-2) + ":" +
+    ("0" + m.getUTCSeconds()).slice(-2);
 
   doc.set(data).then(function() {
-    console.log(`Write post ${name} success`);
+    console.log(`[${dateString}] Write post ${data.no} [${name}] success`);
   })
 }
 
@@ -138,13 +146,21 @@ function main() {
           var post = { name: stringArr.input, no: parseInt(stringArr[0]), magnet: magnet, time: time }
           var name = hash(post)
           var doc = sukebeiCollection.doc(name)
+          var m = new Date();
+          var dateString =
+            m.getUTCFullYear() + "/" +
+            ("0" + (m.getUTCMonth()+1)).slice(-2) + "/" +
+            ("0" + m.getUTCDate()).slice(-2) + " " +
+            ("0" + m.getUTCHours()).slice(-2) + ":" +
+            ("0" + m.getUTCMinutes()).slice(-2) + ":" +
+            ("0" + m.getUTCSeconds()).slice(-2);
 
           doc.get().then(snap => {
             if(!snap.exists) {
               queryFc2(name, post)
             }
             else {
-              console.log(`Post ${name} is exists`);
+              console.log(`[${dateString}] Post ${post.no} [${name}] is exists`);
             }
           })
         });
