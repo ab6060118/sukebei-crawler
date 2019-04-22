@@ -64,7 +64,7 @@ function queryFc2(hashName, post) {
           var filepath = 'temp/' + filename
           var file = fs.createWriteStream(filepath);
 
-          var promise = new Promise(function(resolve) {
+          var promise = new Promise(function(resolve, reject) {
             request(url).pipe(file).on('close', function() {
               thumb({
                 suffix: '',
@@ -74,7 +74,7 @@ function queryFc2(hashName, post) {
                 quiet: true,
                 overwrite: true,
               }).then(function() {
-                sukebeiBucket.upload(filepath, {
+                return sukebeiBucket.upload(filepath, {
                   destination: 'sukebeiPost/' + post.no + '.' + filename,
                 }).then(function(res) {
                   if(!post.images) post.images = []
@@ -83,15 +83,16 @@ function queryFc2(hashName, post) {
                   resolve(true)
                   fs.unlink(filepath, function(err) {
                     if (err) {
-                      console.error(err)
+                      console.error(err, 'unlink error')
                       return
                     }
                   })
                 }).catch(function(err) {
-                  console.log(err);
+                  console.log(err, 'upload error');
+                  reject(false)
                 })
-              }, function(err) {
-                console.log(err);
+              }).catch(function(error) {
+                console.log(err, 'thumb error');
               })
             })
           })
@@ -102,8 +103,9 @@ function queryFc2(hashName, post) {
         Promise.all(promises).then(function() {
           write_data(hashName, post)
           done()
-        }, function(error) {
+        }).catch(function(error) {
           console.log(error);
+          done()
         })
       }
     }
